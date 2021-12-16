@@ -4,7 +4,7 @@ package calсulator;
 import java.util.Stack;
 
 public class Calculator {
-    private static final String OPERATORS = "+-*/^%";
+    private static final String operators = "[-+*/^%]";
 
     public double DecideExpression(String expression) {
         CheckExpression(expression);
@@ -15,32 +15,56 @@ public class Calculator {
 
     private void CheckExpression(String expression) {
         boolean flag = expression.matches("^[-+*/^%0-9.() ]*$");
+        expression = expression.replaceAll(" ", "");
 
         if (!flag) {
             ExpressionError("Неизвестные символы в выражении!!!");
         }
 
-        expression = expression.replaceAll(" ", "");
-        for (int i = 0; i < OPERATORS.length(); i++) {
-            if (expression.charAt(0) == OPERATORS.charAt(i) && expression.charAt(0) != '-' && expression.charAt(0) != '%') {
+
+        for (int i = 0; i < operators.length(); i++) {
+            if (expression.charAt(0) == operators.charAt(i) && expression.charAt(0) != '-' && expression.charAt(0) != '%') {
                 ExpressionError("Оператор в начале выражения!!!");
             }
-            if (expression.charAt(expression.length() - 1) == OPERATORS.charAt(i)) {
+            if (expression.charAt(expression.length() - 1) == operators.charAt(i)) {
                 ExpressionError("Оператор в конце выражения!!!");
             }
         }
 
         for (int i = 0; i < expression.length(); i++) {
-            for(int y = 0; y< OPERATORS.length(); y++){
-                if(expression.charAt(i)== OPERATORS.charAt(y)){
-                    for(int z = 0; z< OPERATORS.length(); z++){
-                        if(expression.charAt(i+1)== OPERATORS.charAt(z)){
+            for (int y = 0; y < operators.length(); y++) {
+                if (expression.charAt(i) == operators.charAt(y)) {
+                    for (int z = 0; z < operators.length(); z++) {
+                        if (expression.charAt(i + 1) == operators.charAt(z)) {
                             ExpressionError("Ошибка постановки операторов!!!");
                         }
                     }
                 }
             }
         }
+        String[] operands = expression.split(operators);
+        for (String operand : operands) {
+            if (operand.startsWith(".") || operand.endsWith(".")) {
+                ExpressionError("Ошибка написания нецелочисленного числа!!!");
+            }
+            int flagPoint = 0;
+            for (int y = 0; y < operand.length(); y++) {
+                if (operand.charAt(y) == '.') {
+                    flagPoint++;
+                }
+            }
+            if (flagPoint > 1) {
+                ExpressionError("Ошибка написания нецелочисленного числа!!!");
+            }
+        }
+        for (int i = 0; i < expression.length(); i++) {
+            if (expression.charAt(i) == '.') {
+                if (expression.charAt(i - 1) == '.' || expression.charAt(i + 1) == '.') {
+                    ExpressionError("Ошибка написания нецелочисленного числа!!!");
+                }
+            }
+        }
+
     }
 
     private void ExpressionError(String error) {
@@ -84,6 +108,9 @@ public class Calculator {
             }
             if (priority == 1) {
                 str.append(" ");
+                if (stack.empty()) {
+                    ExpressionError("Ошибка в постановке скобок!!!");
+                }
                 while (PrioritySymbol(stack.peek()) != 2) {
                     if (stack.size() == 1 && stack.lastElement() != '(') {
                         ExpressionError("Ошибка в постановке скобок!!!");
@@ -134,14 +161,14 @@ public class Calculator {
             if (priority > 2 && rpn.charAt(i) != '%') {
                 double a = stack.pop();
                 double b = stack.pop();
-                for(int y = 0; y< OPERATORS.length(); y++){
-                    if(rpn.charAt(i)== OPERATORS.charAt(y)){
+                for (int y = 0; y < operators.length(); y++) {
+                    if (rpn.charAt(i) == operators.charAt(y)) {
                         switch (y) {
-                            case 0 -> stack.push(b + a);
                             case 1 -> stack.push(b - a);
-                            case 2 -> stack.push(b * a);
-                            case 3 -> stack.push(b / a);
-                            case 4 -> stack.push(Math.pow(b, a));
+                            case 2 -> stack.push(b + a);
+                            case 3 -> stack.push(b * a);
+                            case 4 -> stack.push(b / a);
+                            case 5 -> stack.push(Math.pow(b, a));
                         }
                     }
 
