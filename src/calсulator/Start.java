@@ -1,4 +1,5 @@
 package calсulator;
+
 import java.util.Scanner;
 
 public class Start {
@@ -10,7 +11,7 @@ public class Start {
         sc = new Scanner(System.in);
         expression = sc.nextLine();
 
-        System.out.println("Result: "+new Calculator().DecideExpression(expression));
+        System.out.println("Result: " + new Calculator().DecideExpression(expression));
         sc.close();
     }
 }
