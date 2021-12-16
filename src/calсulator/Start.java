@@ -1,4 +1,4 @@
-package calulator;
+package calсulator;
 import java.util.Scanner;
 
 public class Start {
